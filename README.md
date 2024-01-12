@@ -17,8 +17,8 @@ python get_engine_logs.py --base_url BASE_URL --tenant_name TENANT_NAME --api_ke
 - `--base_url`: The base URL of the Checkmarx One region.
 - `--tenant_name`: Your tenant name in Checkmarx One.
 - `--api_key`: Your API key for authenticating with the Checkmarx One APIs.
-- `--scan_id` (optional if `--scan_id_file` is used): The ID of the scan for which you want to retrieve the workflow.
-- `--scan_id_file` (optional if `--scan_id` is used): Path to a text file containing a list of scan IDs, one per line.
+- `--scan_id` (optional): The ID of the scan for which you want to retrieve the workflow.
+- `--scan_id_file` (optional): Path to a text file containing a list of scan IDs, one per line.
 
 ### Optional Arguments
 
