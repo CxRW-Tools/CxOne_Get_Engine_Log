@@ -9,7 +9,7 @@ This tool is designed to retrieve engine logs from Checkmarx One for specific sc
 Execute the script using the following command line:
 
 ```
-python get_engine_log.py --base_url BASE_URL --tenant_name TENANT_NAME --api_key API_KEY [--scan_id SCAN_ID | --scan_id_file SCAN_ID_FILE] [--debug]
+python get_engine_logs.py --base_url BASE_URL --tenant_name TENANT_NAME --api_key API_KEY [--scan_id SCAN_ID | --scan_id_file SCAN_ID_FILE] [--debug]
 ```
 
 ### Required Arguments
@@ -30,19 +30,19 @@ python get_engine_log.py --base_url BASE_URL --tenant_name TENANT_NAME --api_key
 Retrieving and saving a single scan's engine logs:
 
 ```
-python get_engine_log.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id_file scan_ids.txt
+python get_engine_logs.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id_file scan_ids.txt
 ```
 
 Retrieving and saving multiple scan engine logs from a file:
 
 ```
-python get_engine_log.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890
+python get_engine_logs.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890
 ```
 
 Retrieving and saving a scan's engine logs with debug output:
 
 ```
-python get_engine_log.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890 --debug
+python get_engine_logs.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890 --debug
 ```
 
 ## Output
