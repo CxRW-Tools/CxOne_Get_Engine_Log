@@ -1,21 +1,15 @@
-# CxOne Get Scan Workflow Tool Usage Guide
+# CxOne Get Engine Logs Tool Usage Guide
 
 ## Summary
 
-This tool designed to retrieve scan workflow logs from Checkmarx One and save them as CSV files. This utility simplifies the process of extracting detailed workflow information, allowing for easy analysis and record-keeping of scan activities.
+This tool is designed to retrieve engine logs from Checkmarx One for specific scans and engines (SAST & IaC Security) and save them as text files. It caters to the need for in-depth analysis of engine-specific logs, facilitating troubleshooting and auditing of scan results.
 
 ## Syntax and Arguments
 
 Execute the script using the following command line:
 
 ```
-python get_scan_workflow.py --base_url BASE_URL --tenant_name TENANT_NAME --api_key API_KEY --scan_id SCAN_ID [OPTIONS]
-```
-
-Or, to process multiple scans from a file:
-
-```
-python get_scan_workflow.py --base_url BASE_URL --tenant_name TENANT_NAME --api_key API_KEY --scan_id_file SCAN_ID_FILE [OPTIONS]
+python get_engine_log.py --base_url BASE_URL --tenant_name TENANT_NAME --api_key API_KEY [--scan_id SCAN_ID | --scan_id_file SCAN_ID_FILE] [--debug]
 ```
 
 ### Required Arguments
@@ -33,24 +27,24 @@ python get_scan_workflow.py --base_url BASE_URL --tenant_name TENANT_NAME --api_
 
 ## Usage Examples
 
-Retrieving and saving a single scan workflow log:
+Retrieving and saving a single scan's engine logs:
 
 ```
-python get_scan_workflow.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id_file scan_ids.txt
+python get_engine_log.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id_file scan_ids.txt
 ```
 
-Retrieving and saving multiple scan workflows from a file:
+Retrieving and saving multiple scan engine logs from a file:
 
 ```
-python get_scan_workflow.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890
+python get_engine_log.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890
 ```
 
-Retrieving and saving a scan workflow log with debug output:
+Retrieving and saving a scan's engine logs with debug output:
 
 ```
-python get_scan_workflow.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890 --debug
+python get_engine_log.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890 --debug
 ```
 
 ## Output
 
-For each scan ID, the tool generates a separate CSV file named `<scan_id>.csv` containing the workflow data. The tool provides console output indicating the steps being performed, such as authentication, retrieval of the workflow, and writing the data to the CSV files. If the `--debug` flag is used, additional diagnostic information will be displayed to assist in troubleshooting and verifying the process.
+For each scan ID and engine, the script will attempt to retrieve the log. If successful, the log will be saved in a file named <scan_id>-<engine>.txt.

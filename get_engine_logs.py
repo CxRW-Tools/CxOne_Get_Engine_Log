@@ -70,43 +70,35 @@ def authenticate(api_key):
         print(f"An error occurred during authentication: {e}")
         sys.exit(1)
 
-def get_scan_workflow(scan_id):
-    workflow_url = f"{base_url}/api/scans/{scan_id}/workflow"
+def get_engine_log(scan_id, engine):
+    logs_url = f"{base_url}/api/logs/{scan_id}/{engine}"
     headers = {
         'Accept': 'application/json; version=1.0',
         'Authorization': f'Bearer {auth_token}'
     }
 
     if debug:
-        print(f"Retrieving workflow for scan ID: {scan_id}")
-        print(f"GET Request URL: {workflow_url}")
+        print(f"Retrieving {engine} log for scan ID: {scan_id}")
+        print(f"GET Request URL: {logs_url}")
 
     try:
-        response = requests.get(workflow_url, headers=headers)
+        response = requests.get(logs_url, headers=headers)
         response.raise_for_status()
 
         if debug:
-            print("Workflow data retrieved successfully.")
+            print("Log data retrieved successfully.")
 
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred while retrieving the workflow: {e}")
+        return response.text
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            if debug:
+                print(f"{engine} log not found for scan {scan_id}")
+        else:
+            print(f"An error occurred while retrieving the log: {e}")
         return None
-
-def write_workflow_to_csv(workflow_data, output_file):
-    if not workflow_data:
-        print("Error: No workflow data to write.")
-        return
-
-    try:
-        with open(output_file, 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=['Timestamp', 'Source', 'Info'])
-            writer.writeheader()
-            for event in workflow_data:
-                writer.writerow(event)
-
-    except IOError as e:
-        print(f"An error occurred while writing to the file: {e}")
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred while retrieving the log: {e}")
+        return None
 
 def read_scan_ids_from_file(file_path):
     try:
@@ -154,17 +146,37 @@ def main():
         return
     
     scan_ids = [args.scan_id] if args.scan_id else read_scan_ids_from_file(args.scan_id_file)
+    engines = ['sast', 'kics']
+    scan_id_count = len(scan_ids)
+    log_count = 0
 
     for scan_id in scan_ids:
-        workflow_data = get_scan_workflow(scan_id)
-        if workflow_data is None:
-            print(f"Failed to retrieve workflow data for scan ID {scan_id}.")
-            continue
-
-        # Write each workflow to a separate file named '<scan_id>.csv'
-        write_workflow_to_csv(workflow_data, f"{scan_id}.csv")
-
-    print(f"Workflow data successfully retrieved")
+        for engine in engines:
+            log_data = get_engine_log(scan_id, engine)
+            if log_data:
+                # Save the log data to a file named <scan_id>-<engine>.txt
+                file_name = f"{scan_id}-{engine}.txt"
+                try:
+                    with open(file_name, 'w') as file:
+                        file.write(log_data)
+                    if debug:
+                        print(f"Log for scan ID {scan_id} and engine {engine} saved as {file_name}")
+                    log_count += 1
+                except IOError as e:
+                    print(f"An error occurred while writing the file {file_name}: {e}")
+        
+    if log_count == 0:
+            print("No engine logs found")
+    elif log_count == 1:
+        if scan_id_count == 1:
+            print("One log retrieved for one scan")
+        else:
+            print("One log retrieved for multiple scans")
+    else:
+        if scan_id_count == 1:
+            print(f"{log_count} engine logs retrieved for one scan")
+        else:
+            print(f"{log_count} engine logs retrieved for {scan_id_count} scans")
 
 if __name__ == "__main__":
     main()
