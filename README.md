@@ -30,13 +30,13 @@ python get_engine_logs.py --base_url BASE_URL --tenant_name TENANT_NAME --api_ke
 Retrieving and saving a single scan's engine logs:
 
 ```
-python get_engine_logs.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id_file scan_ids.txt
+python get_engine_logs.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890
 ```
 
 Retrieving and saving multiple scan engine logs from a file:
 
 ```
-python get_engine_logs.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id 67890
+python get_engine_logs.py --base_url https://cxone.example.com --tenant_name mytenant --api_key 12345 --scan_id_file scan_ids.txt
 ```
 
 Retrieving and saving a scan's engine logs with debug output:
