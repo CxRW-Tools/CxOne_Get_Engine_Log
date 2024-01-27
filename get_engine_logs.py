@@ -157,7 +157,7 @@ def main():
                 # Save the log data to a file named <scan_id>-<engine>.txt
                 file_name = f"{scan_id}-{engine}.txt"
                 try:
-                    with open(file_name, 'w') as file:
+                    with open(file_name, 'w', encoding='utf-8') as file:
                         file.write(log_data)
                     if debug:
                         print(f"Log for scan ID {scan_id} and engine {engine} saved as {file_name}")
