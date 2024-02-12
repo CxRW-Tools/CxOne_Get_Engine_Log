@@ -1,15 +1,18 @@
 import sys
-import json
 import requests
 import argparse
+import time
+import json
 import csv
 
-# Global variables
+# Standard global variables
 base_url = None
 tenant_name = None
 auth_url = None
 iam_base_url = None
+api_key = None
 auth_token = None
+token_expiration = 0 # initialize so we have to authenticate
 debug = False
 
 def generate_auth_url():
@@ -34,16 +37,20 @@ def generate_auth_url():
         print("Error: Invalid base_url provided")
         sys.exit(1)
 
-def authenticate(api_key):
-    if auth_url is None:
-        return None
+def authenticate():
+    global auth_token, token_expiration
+
+    # if the token hasn't expired then we don't need to authenticate
+    if time.time() < token_expiration - 60:
+        if debug:
+            print("Token still valid.")
+        return
     
     if debug:
-        print("Authenticating with API...")
+        print("Authenticating with API key...")
         
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': f'Bearer {api_key}'
     }
     data = {
         'grant_type': 'refresh_token',
@@ -56,30 +63,35 @@ def authenticate(api_key):
         response.raise_for_status()
         
         json_response = response.json()
-        access_token = json_response.get('access_token')
-        
-        if not access_token:
+        auth_token = json_response.get('access_token')
+        if not auth_token:
             print("Error: Access token not found in the response.")
-            return None
+            sys.exit(1)
         
+        expires_in = json_response.get('expires_in')
+        
+        if not expires_in:
+            expires_in = 600
+
+        token_expiration = time.time() + expires_in
+
         if debug:
-            print("Successfully authenticated")
-        
-        return access_token
+            print("Authenticated successfully.")
+      
     except requests.exceptions.RequestException as e:
         print(f"An error occurred during authentication: {e}")
         sys.exit(1)
 
 def get_engine_log(scan_id, engine):
+    if debug:
+        print(f"Retrieving {engine} log for scan ID: {scan_id}")
+    authenticate()
+
     logs_url = f"{base_url}/api/logs/{scan_id}/{engine}"
     headers = {
         'Accept': 'application/json; version=1.0',
         'Authorization': f'Bearer {auth_token}'
     }
-
-    if debug:
-        print(f"Retrieving {engine} log for scan ID: {scan_id}")
-        print(f"GET Request URL: {logs_url}")
 
     try:
         response = requests.get(logs_url, headers=headers)
@@ -115,6 +127,7 @@ def main():
     global auth_url
     global auth_token
     global iam_base_url
+    global api_key
 
     # Parse and handle various CLI flags
     parser = argparse.ArgumentParser(description='Export a CxOne scan workflow as a CSV file')
@@ -135,15 +148,10 @@ def main():
     base_url = args.base_url
     tenant_name = args.tenant_name
     debug = args.debug
-            
     if args.iam_base_url:
         iam_base_url = args.iam_base_url
-    
+    api_key = args.api_key
     auth_url = generate_auth_url()
-    auth_token = authenticate(args.api_key)
-    
-    if auth_token is None:
-        return
     
     scan_ids = [args.scan_id] if args.scan_id else read_scan_ids_from_file(args.scan_id_file)
     engines = ['sast', 'kics']
