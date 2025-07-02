@@ -1,0 +1,2 @@
+# Core dependencies for CxOne Get Engine Log
+requests>=2.28.0

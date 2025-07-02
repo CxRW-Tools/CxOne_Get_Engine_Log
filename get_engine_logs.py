@@ -131,19 +131,19 @@ def main():
 
     # Parse and handle various CLI flags
     parser = argparse.ArgumentParser(description='Export a CxOne scan workflow as a CSV file')
-    parser.add_argument('--base_url', required=True, help='Region Base URL')
-    parser.add_argument('--iam_base_url', required=False, help='Region IAM Base URL')
-    parser.add_argument('--tenant_name', required=True, help='Tenant name')
-    parser.add_argument('--api_key', required=True, help='API key for authentication')
-    parser.add_argument('--scan_id', required=False, help='ID of the scan to retrieve')
-    parser.add_argument('--scan_id_file', required=False, help='File containing list of scan IDs')
+    parser.add_argument('--base-url', required=True, help='Region Base URL')
+    parser.add_argument('--iam-base-url', required=False, help='Region IAM Base URL')
+    parser.add_argument('--tenant-name', required=True, help='Tenant name')
+    parser.add_argument('--api-key', required=True, help='API key for authentication')
+    parser.add_argument('--scan-id', required=False, help='ID of the scan to retrieve')
+    parser.add_argument('--scan-id-file', required=False, help='File containing list of scan IDs')
     parser.add_argument('--debug', action='store_true', help='Enable debug output')
 
     args = parser.parse_args()
     
     # Ensure either scan_id or scan_id_file is provided, but not both
     if bool(args.scan_id) == bool(args.scan_id_file):
-        parser.error("Either --scan_id or --scan_id_file must be provided, but not both.")
+        parser.error("Either --scan-id or --scan-id-file must be provided, but not both.")
     
     base_url = args.base_url
     tenant_name = args.tenant_name
